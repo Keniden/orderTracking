@@ -2,10 +2,11 @@ package repository
 
 import (
 	"github.com/jmoiron/sqlx"
+	"orderTracking"
 )
 
 type Authorization interface {
-	CreateUser(user order.User) (int, error)
+	CreateUser(user orderTracking.User) (int, error)
 }
 
 type OrderList interface {

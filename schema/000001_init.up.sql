@@ -1,31 +1,31 @@
 CREATE TABLE users (
-    id serial not null unique,
-    name varchar(255) not null,
-    username varchar(255) not null unique,
-    password_hash varchar(255) not null
+    id serial PRIMARY KEY,
+    name varchar(255) NOT NULL,
+    username varchar(255) NOT NULL UNIQUE,
+    password_hash varchar(255) NOT NULL
 );
 
 CREATE TABLE order_lists(
-    id serial not null unique,
-    title varchar(255) not null,
+    id serial PRIMARY KEY,
+    title varchar(255) NOT NULL,
     description varchar(255)
 );
 
 CREATE TABLE users_lists(
-    id serial not null unique,
-    user_id int references users (id) on delete cascade not null,
-    list_id int references order_lists (id) on delete cascade not null
+    id serial PRIMARY KEY,
+    user_id int REFERENCES users (id) ON DELETE CASCADE NOT NULL,
+    list_id int REFERENCES order_lists (id) ON DELETE CASCADE NOT NULL
 );
 
 CREATE TABLE order_items (
-    id serial not null unique,
-    title varchar(255) not null,
+    id serial PRIMARY KEY,
+    title varchar(255) NOT NULL,
     description varchar(255),
-    done boolean not null default false,
+    done boolean NOT NULL DEFAULT false
 );
 
 CREATE TABLE lists_items (
-    id serial not null unique,
-    user_id int references users (id) on delete cascade not null,
-    list_id int references order_lists (id) on delete cascade not null,
+    id serial PRIMARY KEY,
+    user_id int REFERENCES users (id) ON DELETE CASCADE NOT NULL,
+    list_id int REFERENCES order_lists (id) ON DELETE CASCADE NOT NULL
 );

@@ -1,4 +1,4 @@
-package handler
+package handler //обработчики HTTP-запросов
 
 import (
 	"net/http"

@@ -1,9 +1,12 @@
 package service
 
-import "orderTracking/pkg/repository"
+import (
+	"orderTracking/pkg/repository"
+	"orderTracking"
+)
 
 type Authorization interface {
-	CreateUser(user OrderTracking.User) (int, user)
+	CreateUser(user orderTracking.User) (int, error)
 }
 
 type OrderTracking interface {

@@ -1,4 +1,4 @@
-package service
+package service // бизнес-логику приложения
 
 import (
 	"crypto/sha1"
