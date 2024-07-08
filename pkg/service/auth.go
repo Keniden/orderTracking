@@ -2,6 +2,7 @@ package service // бизнес-логику приложения
 
 import (
 	"crypto/sha1"
+	"errors"
 	"fmt"
 	"orderTracking"
 	"orderTracking/pkg/repository"
@@ -42,12 +43,30 @@ func (s *AuthService) GenerateToken(username, password string) (string, error) {
 	}
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, &tokenClaims{
 		jwt.StandardClaims{
-		ExpiresAt: time.Now().Add(tokenTTL).Unix(),
-		IssuedAt:  time.Now().Unix(),
-	},
-	user.Id, 
-})
+			ExpiresAt: time.Now().Add(tokenTTL).Unix(),
+			IssuedAt:  time.Now().Unix(),
+		},
+		user.Id,
+	})
 	return token.SignedString([]byte(signedKey))
+}
+
+func (s *AuthService) ParseToken(accessToken string) (int, error) {
+	token, err := jwt.ParseWithClaims(accessToken, &tokenClaims{}, func(token *jwt.Token) (interface{}, error) {
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, errors.New("invalid string method")
+		}
+		return []byte(signedKey), nil
+
+	})
+	if err != nil  {
+		return 0, err
+	}
+	claims, ok := token.Claims.(*tokenClaims)
+	if !ok {
+		return 0, errors.New("Token claims are not of type *tokenClaims")
+	}
+	return claims.UserId, nil
 }
 
 func generatePasswordHash(password string) string {

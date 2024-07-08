@@ -8,6 +8,7 @@ import (
 type Authorization interface {
 	CreateUser(user orderTracking.User) (int, error)
 	GenerateToken(username, password string) (string, error)
+	ParseToken(token string) (int, error)
 }
 
 type OrderTracking interface {
