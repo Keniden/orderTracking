@@ -7,6 +7,7 @@ import (
 
 type Authorization interface {
 	CreateUser(user orderTracking.User) (int, error)
+	GetUser(username, password string) (orderTracking.User, error)
 }
 
 type OrderList interface {
