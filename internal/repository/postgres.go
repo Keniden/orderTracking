@@ -7,11 +7,8 @@ import (
 )
 
 const (
-	usersTable       = "users"
-	orderListTable  = "order_lists"
-	usersListTable  = "users_lists"
-	orderItemsTable = "order_items"
-	listsItemTable  = "lists_items"
+	usersTable      = "users"
+	orderList  = "orders"
 )
 
 type Config struct {
@@ -23,6 +20,7 @@ type Config struct {
 	SSLMode  string
 }
 
+//TODO gorm
 func NewPostgresDB(cfg Config) (*sqlx.DB, error) {
 	db, err := sqlx.Open("postgres", fmt.Sprintf("host=%s port=%s user=%s dbname=%s password=%s sslmode=%s",
 		cfg.Host, cfg.Port, cfg.Username, cfg.DBName, cfg.Password, cfg.SSLMode))

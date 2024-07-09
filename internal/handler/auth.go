@@ -1,13 +1,14 @@
 package handler //обработчики HTTP-запросов
 
 import (
-	"github.com/gin-gonic/gin"
 	"net/http"
-	"orderTracking"
+	"orderTracking/internal/models"
+
+	"github.com/gin-gonic/gin"
 )
 
 func (h *Handler) signUp(c *gin.Context) {
-	var input orderTracking.User
+	var input models.User
 	if err := c.BindJSON(&input); err != nil {
 		newErrorResponse(c, http.StatusBadRequest, err.Error())
 		return

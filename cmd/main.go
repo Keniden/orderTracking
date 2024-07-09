@@ -1,49 +1,41 @@
 package main
 
 import (
-	"github.com/sirupsen/logrus"
-	"orderTracking"
-	"orderTracking/pkg/handler"
-	"orderTracking/pkg/repository"
-	"orderTracking/pkg/service"
-	"os"
-	"github.com/joho/godotenv"
+	"context"
+	"net/http"
+	"orderTracking/internal/configs"
+	"orderTracking/internal/handler"
+	"time"
+
 	_ "github.com/lib/pq"
-	"github.com/spf13/viper"
+	"github.com/sirupsen/logrus"
 )
+
+type Server struct {
+	httpServer *http.Server
+}
+
+func (s *Server) Run(port string, handler http.Handler) error {
+	s.httpServer = &http.Server{
+		Addr:           ":" + port,
+		Handler:        handler,
+		MaxHeaderBytes: 1 << 20, // 1 mb
+		ReadTimeout:    10 * time.Second,
+		IdleTimeout:    10 * time.Second,
+	}
+	return s.httpServer.ListenAndServe()
+}
+
+func (s *Server) Shutdown(ctx context.Context) error {
+	return s.httpServer.Shutdown(ctx)
+}
 
 func main() {
 	logrus.SetFormatter(new(logrus.JSONFormatter))
-
-	if err := initConfig(); err != nil {
-		logrus.Fatal("error occured while initializing config:  %s", err.Error())
-	}
-	if err := godotenv.Load(); err!= nil  {
-		logrus.Fatalf("error occured while loading.env file:  %s", err.Error())
-	}
-	db, err := repository.NewPostgresDB(repository.Config{
-		Host:     viper.GetString("database.host"),
-		Port:     viper.GetString("database.port"),
-		Username: viper.GetString("database.username"),
-		Password: os.Getenv("DB_PASSWORD"),
-		DBName:   viper.GetString("database.dbname"),
-		SSLMode:  viper.GetString("database.sslmode"),
-	})
-	if err != nil {
-		logrus.Fatalf("error occured while initializing DB: %s", err.Error())
-	}
-	repos := repository.NewRepository(db)
-	services := service.NewService(repos)
-	handlers := handler.NewHandler(services)
-
-	server := new(orderTracking.Server)
+	db := configs.InitConfig()
+	handlers := handler.InitApp(db)
+	server := new(Server)
 	if err := server.Run("8000", handlers.InitRoutes()); err != nil {
 		logrus.Fatal("error occured while running http server: %s", err.Error())
 	}
-}
-
-func initConfig() error {
-	viper.AddConfigPath("configs")
-	viper.SetConfigName("config")
-	return viper.ReadInConfig()
 }

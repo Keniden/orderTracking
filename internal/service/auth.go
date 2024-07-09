@@ -4,8 +4,8 @@ import (
 	"crypto/sha1"
 	"errors"
 	"fmt"
-	"orderTracking"
-	"orderTracking/pkg/repository"
+	"orderTracking/internal/models"
+	"orderTracking/internal/repository"
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
@@ -30,7 +30,7 @@ func NewAuthService(repo repository.Authorization) *AuthService {
 	return &AuthService{repo: repo}
 }
 
-func (s *AuthService) CreateUser(user orderTracking.User) (int, error) {
+func (s *AuthService) CreateUser(user models.User) (int, error) {
 	user.Password = generatePasswordHash(user.Password)
 	return s.repo.CreateUser(user)
 
@@ -59,7 +59,7 @@ func (s *AuthService) ParseToken(accessToken string) (int, error) {
 		return []byte(signedKey), nil
 
 	})
-	if err != nil  {
+	if err != nil {
 		return 0, err
 	}
 	claims, ok := token.Claims.(*tokenClaims)

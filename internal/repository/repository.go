@@ -1,29 +1,28 @@
 package repository
 
 import (
+	"orderTracking/internal/models"
+
 	"github.com/jmoiron/sqlx"
-	"orderTracking"
 )
 
 type Authorization interface {
-	CreateUser(user orderTracking.User) (int, error)
-	GetUser(username, password string) (orderTracking.User, error)
-}
-
-type OrderList interface {
+	CreateUser(user models.User) (int, error)
+	GetUser(username, password string) (models.User, error)
 }
 
 type OrderItem interface {
+	CreateOrderItem(orderItem models.OrderItem) (string, error)
 }
 
 type Repository struct {
 	Authorization
-	OrderList
 	OrderItem
 }
 
 func NewRepository(db *sqlx.DB) *Repository {
 	return &Repository{
 		Authorization: NewAuthPostgres(db),
+		OrderItem:     NewOrderRepository(db),
 	}
 }

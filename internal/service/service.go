@@ -1,30 +1,28 @@
 package service
 
 import (
-	"orderTracking/pkg/repository"
-	"orderTracking"
+	"orderTracking/internal/models"
+	"orderTracking/internal/repository"
 )
 
 type Authorization interface {
-	CreateUser(user orderTracking.User) (int, error)
+	CreateUser(user models.User) (int, error)
 	GenerateToken(username, password string) (string, error)
 	ParseToken(token string) (int, error)
 }
 
-type OrderTracking interface {
-}
-
 type OrderItem interface {
+	CreateOrderItem(orderItem models.OrderItem) (string, error)
 }
 
 type Service struct {
 	Authorization
-	OrderTracking
 	OrderItem
 }
 
 func NewService(repos *repository.Repository) *Service {
 	return &Service{
 		Authorization: NewAuthService(repos.Authorization),
+		OrderItem:     NewOrderService(repos.OrderItem),
 	}
 }
