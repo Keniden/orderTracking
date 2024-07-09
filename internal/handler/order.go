@@ -49,16 +49,9 @@ func (h *Handler) createOrder(c *gin.Context) {
 }
 
 func (h *Handler) getStatus(c *gin.Context) {
-	var order models.OrderItem
-	if err := c.BindJSON(&order); err != nil {
-		newErrorResponse(c, http.StatusBadRequest, err.Error())
-		return
-	}
 	// track_id, _ := c.Get("userId")
-	new_order := models.OrderItem{
-		Track_id: order.Track_id,
-	}
-	msg, err := h.services.OrderItem.GetOrderDetailsByTrackID(new_order)
+	id := c.Query("track_id")
+	msg, err := h.services.OrderItem.GetOrderDetailsByTrackID(id)
 	if err != nil {
 		newErrorResponse(c, http.StatusBadRequest, err.Error())
 		return

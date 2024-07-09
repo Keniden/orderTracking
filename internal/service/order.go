@@ -17,6 +17,6 @@ func (s *OrderService) CreateOrderItem(orderItem models.OrderItem) (string, erro
 	return s.repo.CreateOrderItem(orderItem)
 }
 
-func (s *OrderService) GetOrderDetailsByTrackID(OrderItem models.OrderItem) (models.OrderItem, error) {
-	return s.repo.GetOrderDetailsByTrackID(OrderItem)
+func (s *OrderService) GetOrderDetailsByTrackID(track_id string) (models.OrderItem, error) {
+	return s.repo.GetOrderDetailsByTrackID(track_id)
 }

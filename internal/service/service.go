@@ -13,7 +13,7 @@ type Authorization interface {
 
 type OrderItem interface {
 	CreateOrderItem(orderItem models.OrderItem) (string, error)
-	GetOrderDetailsByTrackID(OrderItem models.OrderItem) (models.OrderItem, error)
+	GetOrderDetailsByTrackID(track_id string) (models.OrderItem, error)
 }
 
 type Service struct {

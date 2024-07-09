@@ -25,10 +25,10 @@ func (r *OrderRepository) CreateOrderItem(orderItem models.OrderItem) (string, e
 	return track_id, nil
 }
 
-func (r *OrderRepository) GetOrderDetailsByTrackID(orderItem models.OrderItem) (models.OrderItem, error) {
+func (r *OrderRepository) GetOrderDetailsByTrackID(track_id string) (models.OrderItem, error) {
 	var order models.OrderItem
 	query := `SELECT track_id, id, title, description, price, date, from_location, to_location, status FROM orders WHERE track_id = $1`
-	err := r.db.QueryRow(query, order.Track_id).Scan(&order.Track_id, &order.Id, &order.Title, &order.Description, &order.Price, &order.Date, &order.From_location, &order.To_location, &order.Status)
+	err := r.db.QueryRow(query, track_id).Scan(&order.Track_id, &order.Id, &order.Title, &order.Description, &order.Price, &order.Date, &order.From_location, &order.To_location, &order.Status)
 	if err != nil {
 		return order, err
 	}
