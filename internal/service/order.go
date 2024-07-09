@@ -16,3 +16,7 @@ func NewOrderService(repo repository.OrderItem) *OrderService {
 func (s *OrderService) CreateOrderItem(orderItem models.OrderItem) (string, error) {
 	return s.repo.CreateOrderItem(orderItem)
 }
+
+func (s *OrderService) GetOrderDetailsByTrackID(OrderItem models.OrderItem) (models.OrderItem, error) {
+	return s.repo.GetOrderDetailsByTrackID(OrderItem)
+}

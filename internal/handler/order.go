@@ -10,10 +10,13 @@ import (
 )
 
 type InputOrderItem struct {
-	Title       string `json:"title"`
-	Description string `json:"description"`
-	Price       int    `json:"price"`
-	Username    string `json:"username"`
+	Title         string `json:"title"`
+	Description   string `json:"description"`
+	Price         int    `json:"price"`
+	Username      string `json:"username"`
+	From_location string `json:"from_location"`
+	To_location   string `json:"to_location"`
+	Status        string `json:"status"`
 }
 
 // type Answer struct {
@@ -28,13 +31,14 @@ func (h *Handler) createOrder(c *gin.Context) {
 	}
 	user_id, _ := c.Get("userId")
 	new_order := models.OrderItem{
-		Track_id:    uuid.New().String(),
-		Title:       order.Title,
-		Description: order.Description,
-		Price:       order.Price,
-		Username:    order.Username,
-		Date:        time.Now(),
-		Id:          user_id.(int),
+		Track_id:      uuid.New().String(),
+		Title:         order.Title,
+		Description:   order.Description,
+		Price:         order.Price,
+		Date:          time.Now(),
+		Id:            user_id.(int),
+		From_location: order.From_location,
+		To_location:   order.To_location,
 	}
 	msg, err := h.services.OrderItem.CreateOrderItem(new_order)
 	if err != nil {
@@ -44,14 +48,20 @@ func (h *Handler) createOrder(c *gin.Context) {
 	c.JSON(http.StatusOK, msg)
 }
 
-func (h *Handler) getAllItems(c *gin.Context) {
-
-}
-func (h *Handler) getItemById(c *gin.Context) {
-
-}
-func (h *Handler) updateItem(c *gin.Context) {
-
-}
-func (h *Handler) deleteItem(c *gin.Context) {
+func (h *Handler) getStatus(c *gin.Context) {
+	var order models.OrderItem
+	if err := c.BindJSON(&order); err != nil {
+		newErrorResponse(c, http.StatusBadRequest, err.Error())
+		return
+	}
+	// track_id, _ := c.Get("userId")
+	new_order := models.OrderItem{
+		Track_id: order.Track_id,
+	}
+	msg, err := h.services.OrderItem.GetOrderDetailsByTrackID(new_order)
+	if err != nil {
+		newErrorResponse(c, http.StatusBadRequest, err.Error())
+		return
+	}
+	c.JSON(http.StatusOK, msg)
 }

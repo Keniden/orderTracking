@@ -13,6 +13,8 @@ CREATE TABLE "orders" (
     title TEXT NOT NULL,
     description TEXT,
     price INTEGER NOT NULL,
-    username TEXT NOT NULL,
-    date TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+    date TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    from_location TEXT,
+    to_location TEXT,
+    status TEXT NOT NULL
 );
