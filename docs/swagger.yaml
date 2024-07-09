@@ -69,8 +69,8 @@ definitions:
 host: localhost:8000
 info:
   contact: {}
-  description: API Server SalesList Application
-  title: Sales API
+  description: API Server OrderTracking Application
+  title: Order Tracking API
   version: "1.0"
 paths:
   /api/lists/add_order:
