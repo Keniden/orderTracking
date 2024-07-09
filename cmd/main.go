@@ -11,16 +11,16 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-// @title Order Tracking API
-// @version 1.0
-// @description API Server for Order Tracking
+//	@title			Sales API
+//	@version		1.0
+//	@description	API Server SalesList Application
 
-// @host localhost:8000
-// @BasePath /
+//@host localhost:8000
+//@BasePath /
 
-// @securityDefinitions.apikey ApiKeyAuth
-// @in header
-// @name Authorization
+//@securityDefinitions.apikey ApiKeyAuth
+//@in Header
+//@name Authorization
 
 type Server struct {
 	httpServer *http.Server

@@ -1,14 +1,222 @@
 basePath: /
+definitions:
+  handler.ErrorResponse:
+    description: Represents an error response
+    properties:
+      message:
+        type: string
+    type: object
+  handler.InputOrderItem:
+    properties:
+      description:
+        type: string
+      from_location:
+        type: string
+      price:
+        type: integer
+      status:
+        type: string
+      title:
+        type: string
+      to_location:
+        type: string
+      username:
+        type: string
+    type: object
+  handler.signInInput:
+    properties:
+      password:
+        type: string
+      username:
+        type: string
+    required:
+    - password
+    - username
+    type: object
+  models.OrderItem:
+    properties:
+      data:
+        type: string
+      description:
+        type: string
+      from_location:
+        type: string
+      id:
+        type: integer
+      price:
+        type: integer
+      status:
+        type: string
+      title:
+        type: string
+      to_location:
+        type: string
+      track_id:
+        type: string
+    type: object
+  models.User:
+    properties:
+      name:
+        type: string
+      password:
+        type: string
+      username:
+        type: string
+    required:
+    - password
+    - username
+    type: object
 host: localhost:8000
 info:
   contact: {}
-  description: API Server for Order Tracking
-  title: Order Tracking API
+  description: API Server SalesList Application
+  title: Sales API
   version: "1.0"
-paths: {}
+paths:
+  /api/lists/add_order:
+    post:
+      consumes:
+      - application/json
+      description: Create a new order
+      operationId: create-order
+      parameters:
+      - description: Order info
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/handler.InputOrderItem'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.OrderItem'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Create Order
+      tags:
+      - Order
+  /api/lists/status:
+    get:
+      consumes:
+      - application/json
+      description: Get the status of an order by track ID
+      operationId: get-order-status
+      parameters:
+      - description: Track ID
+        in: query
+        name: track_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.OrderItem'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Get Order Status
+      tags:
+      - Order
+  /auth/sign-in:
+    post:
+      consumes:
+      - application/json
+      description: Авторизация пользователя.
+      operationId: sign-in
+      parameters:
+      - description: Информация для входа
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/handler.signInInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+      summary: Sign In
+      tags:
+      - Account
+  /auth/sign-up:
+    post:
+      consumes:
+      - application/json
+      description: Создание нового пользователя в системе.
+      operationId: sign-up
+      parameters:
+      - description: Информация о пользователе
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/models.User'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+      summary: Sign Up
+      tags:
+      - Account
 securityDefinitions:
   ApiKeyAuth:
-    in: header
+    in: Header
     name: Authorization
     type: apiKey
 swagger: "2.0"

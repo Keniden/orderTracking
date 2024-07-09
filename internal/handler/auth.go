@@ -7,6 +7,19 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// signUp godoc
+//
+//	@Summary		Sign Up
+//	@Tags			Account
+//	@Description	Создание нового пользователя в системе.
+//	@ID				sign-up
+//	@Accept			json
+//	@Produce		json
+//	@Param			body	body		models.User	true	"Информация о пользователе"
+//	@Success		200		{object}	map[string]interface{}
+//	@Failure		400		{object}	ErrorResponse
+//	@Failure		500		{object}	ErrorResponse
+//	@Router			/auth/sign-up [post]
 func (h *Handler) signUp(c *gin.Context) {
 	var input models.User
 	if err := c.BindJSON(&input); err != nil {
@@ -29,6 +42,19 @@ type signInInput struct {
 	Password string `json:"password" binding:"required"`
 }
 
+// signIn godoc
+//
+//	@Summary		Sign In
+//	@Tags			Account
+//	@Description	Авторизация пользователя.
+//	@ID				sign-in
+//	@Accept			json
+//	@Produce		json
+//	@Param			body	body		signInInput	true	"Информация для входа"
+//	@Success		200		{object}	map[string]interface{}
+//	@Failure		400		{object}	ErrorResponse
+//	@Failure		500		{object}	ErrorResponse
+//	@Router			/auth/sign-in [post]
 func (h *Handler) signIn(c *gin.Context) {
 	var input signInInput
 

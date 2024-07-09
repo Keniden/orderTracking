@@ -23,6 +23,21 @@ type InputOrderItem struct {
 // 	Message string `json:"message"`
 // }
 
+// createOrder godoc
+//
+//	@Summary		Create Order
+//	@Security		ApiKeyAuth
+//	@Tags			Order
+//	@Description	Create a new order
+//	@ID				create-order
+//	@Accept			json
+//	@Produce		json
+//	@Param			body	body		InputOrderItem	true	"Order info"
+//	@Success		200		{object}	models.OrderItem
+//	@Failure		400		{object}	ErrorResponse
+//	@Failure		401		{object}	ErrorResponse
+//	@Failure		500		{object}	ErrorResponse
+//	@Router			/api/lists/add_order [post]
 func (h *Handler) createOrder(c *gin.Context) {
 	var order InputOrderItem
 	if err := c.BindJSON(&order); err != nil {
@@ -48,6 +63,22 @@ func (h *Handler) createOrder(c *gin.Context) {
 	c.JSON(http.StatusOK, msg)
 }
 
+// getStatus godoc
+//
+//	@Summary		Get Order Status
+//	@Security		ApiKeyAuth
+//	@Tags			Order
+//	@Description	Get the status of an order by track ID
+//	@ID				get-order-status
+//	@Accept			json
+//	@Produce		json
+//	@Param			track_id	query	string	true	"Track ID"
+//	@Success		200		{object}	models.OrderItem
+//	@Failure		400		{object}	ErrorResponse
+//	@Failure		401		{object}	ErrorResponse
+//	@Failure		404		{object}	ErrorResponse
+//	@Failure		500		{object}	ErrorResponse
+//	@Router			/api/lists/status [get]
 func (h *Handler) getStatus(c *gin.Context) {
 	// track_id, _ := c.Get("userId")
 	id := c.Query("track_id")

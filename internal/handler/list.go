@@ -12,15 +12,3 @@ func (h *Handler) createList(c *gin.Context) {
 		"id": id,
 	})
 }
-func (h *Handler) getAllLists(c *gin.Context) {
-
-}
-func (h *Handler) getListById(c *gin.Context) {
-
-}
-func (h *Handler) updateList(c *gin.Context) {
-
-}
-func (h *Handler) deleteList(c *gin.Context) {
-
-}
