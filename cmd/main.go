@@ -11,9 +11,9 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-//	@title			Sales API
+//	@title			Order Tracking API
 //	@version		1.0
-//	@description	API Server SalesList Application
+//	@description	API Server OrderTracking Application
 
 //@host localhost:8000
 //@BasePath /
