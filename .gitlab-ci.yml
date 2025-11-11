@@ -1,0 +1,60 @@
+stages: [lint, test, build]
+
+image: golang:1.25
+
+variables:
+  GOFLAGS: -mod=mod
+
+before_script:
+  - go version
+  - go mod download
+
+lint:
+  stage: lint
+  script:
+    - go vet ./...
+    - go fmt ./...
+
+test:
+  stage: test
+  script:
+    - go test -race -count=1 ./...
+
+build:
+  stage: build
+  script:
+    - go build ./cmd/...
+
+trivy-fs:
+  stage: lint
+  image: aquasec/trivy:latest
+  script:
+    - trivy fs --exit-code 0 --no-progress .
+
+gosec:
+  stage: lint
+  image: golang:1.25
+  script:
+    - go install github.com/securego/gosec/v2/cmd/gosec@latest
+    - $(go env GOPATH)/bin/gosec ./...
+
+staticcheck:
+  stage: lint
+  image: golang:1.25
+  script:
+    - go install honnef.co/go/tools/cmd/staticcheck@latest
+    - $(go env GOPATH)/bin/staticcheck ./...
+
+build-grpc:
+  stage: build
+  image: golang:1.25
+  before_script:
+    - apt-get update && apt-get install -y --no-install-recommends protobuf-compiler
+    - go install google.golang.org/protobuf/cmd/protoc-gen-go@latest
+    - go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@latest
+    - go install github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-grpc-gateway@latest
+    - export PATH="$(go env GOPATH)/bin:$PATH"
+    - go mod download
+  script:
+    - protoc -I . -I third_party/googleapis --go_out=. --go-grpc_out=. --grpc-gateway_out=. proto/order.proto
+    - go build -tags with_grpc ./cmd/grpc-server

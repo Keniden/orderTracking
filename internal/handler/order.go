@@ -1,12 +1,13 @@
 package handler
 
 import (
-	"net/http"
-	"orderTracking/internal/models"
-	"time"
+    "net/http"
+    "orderTracking/internal/models"
+    "time"
 
-	"github.com/gin-gonic/gin"
-	"github.com/google/uuid"
+    "github.com/gin-gonic/gin"
+    "github.com/google/uuid"
+    "orderTracking/internal/metrics"
 )
 
 type InputOrderItem struct {
@@ -45,22 +46,24 @@ func (h *Handler) createOrder(c *gin.Context) {
 		return
 	}
 	user_id, _ := c.Get("userId")
-	new_order := models.OrderItem{
-		Track_id:      uuid.New().String(),
-		Title:         order.Title,
-		Description:   order.Description,
-		Price:         order.Price,
-		Date:          time.Now(),
-		Id:            user_id.(int),
-		From_location: order.From_location,
-		To_location:   order.To_location,
-	}
+    new_order := models.OrderItem{
+        Track_id:      uuid.New().String(),
+        Title:         order.Title,
+        Description:   order.Description,
+        Price:         order.Price,
+        Date:          time.Now(),
+        Id:            user_id.(int),
+        From_location: order.From_location,
+        To_location:   order.To_location,
+        Status:        "created",
+    }
 	msg, err := h.services.OrderItem.CreateOrderItem(new_order)
-	if err != nil {
-		newErrorResponse(c, http.StatusBadRequest, err.Error())
-		return
-	}
-	c.JSON(http.StatusOK, msg)
+    if err != nil {
+        newErrorResponse(c, http.StatusBadRequest, err.Error())
+        return
+    }
+    metrics.OrdersCreated.Inc()
+    c.JSON(http.StatusOK, msg)
 }
 
 // getStatus godoc
@@ -80,12 +83,21 @@ func (h *Handler) createOrder(c *gin.Context) {
 //	@Failure		500		{object}	ErrorResponse
 //	@Router			/api/lists/status [get]
 func (h *Handler) getStatus(c *gin.Context) {
-	// track_id, _ := c.Get("userId")
-	id := c.Query("track_id")
-	msg, err := h.services.OrderItem.GetOrderDetailsByTrackID(id)
-	if err != nil {
-		newErrorResponse(c, http.StatusBadRequest, err.Error())
-		return
-	}
-	c.JSON(http.StatusOK, msg)
+    // track_id, _ := c.Get("userId")
+    id := c.Query("track_id")
+    // try Redis hot cache first
+    if h.rdb != nil {
+        if val, err := h.rdb.Get(c.Request.Context(), "order:last_event:"+id).Result(); err == nil && val != "" {
+            metrics.OrderStatusQueried.Inc()
+            c.Data(http.StatusOK, "application/json", []byte(val))
+            return
+        }
+    }
+    msg, err := h.services.OrderItem.GetOrderDetailsByTrackID(id)
+    if err != nil {
+        newErrorResponse(c, http.StatusBadRequest, err.Error())
+        return
+    }
+    metrics.OrderStatusQueried.Inc()
+    c.JSON(http.StatusOK, msg)
 }

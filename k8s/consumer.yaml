@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: order-consumer
+spec:
+  replicas: 1
+  selector:
+    matchLabels: {app: order-consumer}
+  template:
+    metadata: { labels: {app: order-consumer} }
+    spec:
+      containers:
+        - name: consumer
+          image: order-tracking/consumer:latest
+          imagePullPolicy: IfNotPresent
+          volumeMounts:
+            - name: cfg
+              mountPath: /app/internal/configs/config.yml
+              subPath: config.yml
+      volumes:
+        - name: cfg
+          configMap:
+            name: order-tracking-config
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: outbox-relay
+spec:
+  replicas: 1
+  selector:
+    matchLabels: {app: outbox-relay}
+  template:
+    metadata: { labels: {app: outbox-relay} }
+    spec:
+      containers:
+        - name: relay
+          image: order-tracking/relay:latest
+          imagePullPolicy: IfNotPresent
+          volumeMounts:
+            - name: cfg
+              mountPath: /app/internal/configs/config.yml
+              subPath: config.yml
+      volumes:
+        - name: cfg
+          configMap:
+            name: order-tracking-config
+

@@ -1,0 +1,38 @@
+syntax = "proto3";
+package ordertracking.v1;
+
+option go_package = "orderTracking/internal/gen/ordertracking/v1;orderv1";
+
+import "google/api/annotations.proto";
+
+service OrderService {
+  rpc CreateOrder(CreateOrderRequest) returns (CreateOrderResponse) {
+    option (google.api.http) = {
+      post: "/api/lists/add_order"
+      body: "*"
+    };
+  }
+  rpc GetStatus(GetStatusRequest) returns (GetStatusResponse) {
+    option (google.api.http) = {
+      get: "/api/lists/status"
+    };
+  }
+}
+
+message CreateOrderRequest {
+  string title = 1;
+  string description = 2;
+  int32 price = 3;
+  string from_location = 4;
+  string to_location = 5;
+}
+
+message CreateOrderResponse { string track_id = 1; }
+
+message GetStatusRequest { string track_id = 1; }
+
+message GetStatusResponse {
+  string track_id = 1;
+  string status = 2;
+}
+

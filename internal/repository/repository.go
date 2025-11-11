@@ -17,13 +17,15 @@ type OrderItem interface {
 }
 
 type Repository struct {
-	Authorization
-	OrderItem
+    Authorization
+    OrderItem
+    Outbox
 }
 
 func NewRepository(db *sqlx.DB) *Repository {
-	return &Repository{
-		Authorization: NewAuthPostgres(db),
-		OrderItem:     NewOrderRepository(db),
-	}
+    return &Repository{
+        Authorization: NewAuthPostgres(db),
+        OrderItem:     NewOrderRepository(db),
+        Outbox:        NewOutboxRepository(db),
+    }
 }

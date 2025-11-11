@@ -1,0 +1,22 @@
+FROM golang:1.25 AS build
+ARG BUILD_TAGS=with_grpc
+WORKDIR /src
+COPY go.mod go.sum ./
+RUN go mod download
+COPY . .
+# generate protobuf stubs
+RUN apt-get update && apt-get install -y --no-install-recommends protobuf-compiler \
+    && go install google.golang.org/protobuf/cmd/protoc-gen-go@latest \
+    && go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@latest \
+    && go install github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-grpc-gateway@latest \
+    && export PATH="$(go env GOPATH)/bin:$PATH" \
+    && protoc -I . -I third_party/googleapis --go_out=. --go-grpc_out=. --grpc-gateway_out=. proto/order.proto \
+    && CGO_ENABLED=0 GOOS=linux go build -tags ${BUILD_TAGS} -o /out/grpc-server ./cmd/grpc-server
+
+FROM gcr.io/distroless/base-debian12
+WORKDIR /
+COPY --from=build /out/grpc-server /grpc-server
+EXPOSE 9090 8080
+USER 65532:65532
+ENTRYPOINT ["/grpc-server"]
+
